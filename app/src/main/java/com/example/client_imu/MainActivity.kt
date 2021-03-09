@@ -1,16 +1,18 @@
 package com.example.client_imu
 
-import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import kotlinx.coroutines.*
 import org.json.JSONObject
+
+//import kotlin.coroutines
 
 class MainActivity : AppCompatActivity() {
 
-    private  var http_client : HttpImuClient = HttpImuClient("http://192.168.50.200")
+    private var httpClient: HttpImuClient = HttpImuClient("http://192.168.50.200:8081")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,33 +20,55 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun setUrlButton(view: View){
+    fun setUrlButton(view: View) {
 //        get editText object
-        val editUrl : EditText = findViewById(R.id.editURL)
+        val editUrl: EditText = findViewById(R.id.editURL)
 //        get text from this object
         val editUrlString = editUrl.text.toString()
 //        reset URL on http_client
-        http_client.changeUrl("http://" + editUrlString)
+        httpClient.changeUrl("http://" + editUrlString)
 
     }
 
-    fun sendPost(view: View){
+    fun sendPost(view: View) {
+        var responseJson = JSONObject()
+        val textPostResponse: TextView = findViewById(R.id.text_post_response)
+        val testPostString = "{\'lol\':\'kek\'}"
+        val job: Job = CoroutineScope(Dispatchers.IO).launch {
+            responseJson = httpClient.doMethodPost(testPostString)
+        }
+
+//        Not a good solution, I guess should be some method to update view without stoping the app
+        while (job.isActive) {
+
+        }
+        textPostResponse.text = responseJson.toString()
 
     }
 
-    fun sendGet(view: View){
 
-            val responseJson: JSONObject = http_client.doMethodGet()
+    fun sendGet(view: View) {
+        var responseJson = JSONObject()
+        val textPostResponse: TextView = findViewById(R.id.text_post_response)
+        val job: Job = CoroutineScope(Dispatchers.IO).launch {
+            responseJson = httpClient.doMethodGet()
 
+        }
 
-        val textPostResponse : TextView = findViewById(R.id.text_post_response)
+//        Not a good solution, I guess should be some method to update view without stoping the app
+        while (job.isActive) {
 
+        }
         textPostResponse.text = responseJson.toString()
 
 
+
+
     }
 
-    fun copyToPost(view: View){
+
+
+    fun copyToPost(view: View) {
 //        method to copy data from editGet to editPOSTDataTest
         val editGetResponse: EditText = findViewById(R.id.editGet)
         val editPostData: EditText = findViewById(R.id.editPOSTDataTest)
