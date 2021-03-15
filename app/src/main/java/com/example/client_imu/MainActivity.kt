@@ -1,5 +1,6 @@
 package com.example.client_imu
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -12,7 +13,7 @@ import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
 
-    private var httpClient: HttpImuClient = HttpImuClient("http://192.168.50.200:8081")
+    private val httpClient: HttpImuClient = HttpImuClient("http://192.168.50.200:8081")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     fun sendPost(view: View) {
         var responseJson = JSONObject()
         val textPostResponse: TextView = findViewById(R.id.text_post_response)
+//        test body
         val testPostString = "{\'lol\':\'kek\'}"
         val job: Job = CoroutineScope(Dispatchers.IO).launch {
             responseJson = httpClient.doMethodPost(testPostString)
@@ -60,10 +62,6 @@ class MainActivity : AppCompatActivity() {
 
         }
         textPostResponse.text = responseJson.toString()
-
-
-
-
     }
 
 
@@ -75,5 +73,12 @@ class MainActivity : AppCompatActivity() {
         val textInGetField = editGetResponse.text
         editPostData.text = textInGetField
 
+    }
+
+    fun startImuActivity(view: View){
+        val imuIntent = Intent(this, ImuActivity::class.java)
+
+        imuIntent.putExtra(ImuActivity.URL_SEVER_ADDRESS, httpClient.mUrl.toString())
+        startActivity(imuIntent)
     }
 }

@@ -129,6 +129,7 @@
         app:layout_constraintTop_toBottomOf="@+id/editGet" />
 
     <Button
+        android:onClick="startImuActivity"
         android:id="@+id/start_client"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

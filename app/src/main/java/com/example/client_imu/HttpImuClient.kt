@@ -9,7 +9,7 @@ import java.util.*
 
 class HttpImuClient(url: String) {
     private val client = OkHttpClient()
-    private var mUrl: URL = URL(url)
+    public var mUrl: URL = URL(url)
 //    private  lateinit var response_json :JSONObject
 
     fun changeUrl(newURL: String) {
@@ -19,6 +19,7 @@ class HttpImuClient(url: String) {
 
     fun doMethodGet(): JSONObject {
         val request = Request.Builder()
+                // path is hardcoded due to I am don't have an aim to send another data
                 .url("$mUrl/position")
                 .addHeader("Content-type", "application/json")
                 .get()
@@ -34,7 +35,8 @@ class HttpImuClient(url: String) {
         val requestBody = payload.toRequestBody()
         val request = Request.Builder()
                 .method("POST", requestBody)
-                .url(mUrl.toString())
+// path is hardcoded due to I am don't have an aim to send another data
+                .url("$mUrl/position")
                 .build()
 
         val response = client.newCall(request).execute()
