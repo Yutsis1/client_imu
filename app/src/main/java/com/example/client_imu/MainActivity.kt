@@ -77,7 +77,6 @@ class MainActivity : AppCompatActivity() {
 
     fun startImuActivity(view: View){
         val imuIntent = Intent(this, ImuActivity::class.java)
-
         imuIntent.putExtra(ImuActivity.URL_SEVER_ADDRESS, httpClient.mUrl.toString())
         startActivity(imuIntent)
     }

@@ -9,15 +9,12 @@ import android.hardware.SensorManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.json.JSONObject
 
 class ImuActivity : AppCompatActivity(), SensorEventListener {
     companion object {
-        const val URL_SEVER_ADDRESS = "http_client"
+        const val URL_SEVER_ADDRESS = "http://192.168.50.200:8081"
     }
 
     //    values for Sensor
@@ -26,6 +23,8 @@ class ImuActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var senAccelerometer: Sensor
     private lateinit var senSensorGyro: Sensor
     private lateinit var senSensorMagnet: Sensor
+
+    private lateinit var job: Job
 
     //    Values for work sensors
     private var lastUpdate: Long = 0
@@ -44,7 +43,11 @@ class ImuActivity : AppCompatActivity(), SensorEventListener {
 
         //
         senSensorGyro = senSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+        senSensorManager.registerListener(this, senSensorGyro, SensorManager.SENSOR_DELAY_NORMAL)
+
+        //
         senSensorMagnet = senSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+        senSensorManager.registerListener(this, senSensorMagnet, SensorManager.SENSOR_DELAY_NORMAL)
 
     }
 
@@ -67,20 +70,20 @@ class ImuActivity : AppCompatActivity(), SensorEventListener {
             sensorData.put("rawZ", lastZ)
             aboutData.put(event.sensor.name.toString(), sensorData)
 
-            return sensorData.toString()
+            return aboutData.toString()
         }
 
         if (mySensor != null) {
             imuPostString = updateData(event)
         }
-        val job: Job = CoroutineScope(Dispatchers.IO).launch {
+        job = CoroutineScope(Dispatchers.IO).launch {
             var responseJson = httpClient.doMethodPost(imuPostString)
         }
 
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        TODO("Not yet implemented")
+
     }
 
     fun stopClient(view: View){
