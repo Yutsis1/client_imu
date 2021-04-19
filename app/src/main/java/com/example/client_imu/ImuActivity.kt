@@ -1,3 +1,4 @@
+
 package com.example.client_imu
 
 import android.content.Context
@@ -11,6 +12,8 @@ import android.os.Bundle
 import android.view.View
 import kotlinx.coroutines.*
 import org.json.JSONObject
+import java.time.Clock
+import java.time.LocalDateTime
 
 class ImuActivity : AppCompatActivity(), SensorEventListener {
     companion object {
@@ -64,10 +67,11 @@ class ImuActivity : AppCompatActivity(), SensorEventListener {
             val sensorData = JSONObject()
 
 
-
+            val currentMoment = LocalDateTime.now()
             sensorData.put("rawX", lastX)
             sensorData.put("rawY", lastY)
             sensorData.put("rawZ", lastZ)
+            sensorData.put("time", currentMoment.toLocalTime().toString())
             aboutData.put(event.sensor.name.toString(), sensorData)
 
             return aboutData.toString()
